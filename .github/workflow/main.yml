@@ -1,0 +1,27 @@
+name: Build Mobile App
+
+on: [push] # Script jalan tiap kali ada push baru ke branch utama
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest # Kita pinjam server Linux di GitHub
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+        
+      - name: Install Flet
+        run: pip install flet
+        
+      - name: Build Flet APK
+        run: flet build apk --project-dir . # Perintah buat Flet jadi APK
+        
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk # Lokasi APK di server GitHub
