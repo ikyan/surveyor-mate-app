@@ -1,0 +1,36 @@
+name: Build Mobile App
+
+on: 
+  push:
+    branches:
+      - main # Memicu build saat push ke branch main
+      - master # Memicu build saat push ke branch master
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Agar workflow bisa mendeteksi file
+          fetch-depth: 0 
+          
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+        
+      - name: Install Flet
+        run: pip install flet
+        
+      - name: Build Flet APK
+        run: flet build apk --project-dir .
+        
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
